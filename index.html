@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>意味順ゲーム</title>
+<title>意味順ゲームズ — imijun games</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 <style>
   :root{
@@ -24,7 +24,9 @@
   /* ---------- HOME ---------- */
   #home{justify-content:center; align-items:center; gap:22px; text-align:center;}
   .brand h1{margin:0; font-size:34px; letter-spacing:.02em;}
-  .brand .track6{display:flex; gap:5px; justify-content:center; margin-top:12px;}
+  .brand .wordmark{margin-top:7px; font-size:13px; font-weight:800; letter-spacing:.36em;
+                   text-transform:lowercase; opacity:.5; padding-left:.36em;}
+  .brand .track6{display:flex; gap:5px; justify-content:center; margin-top:14px;}
   .brand .track6 span{font-size:11px; font-weight:800; color:#fff; padding:4px 9px; border-radius:999px;}
   .brand p{margin:14px 0 0; opacity:.72; font-size:14px;}
   .tiles{display:flex; flex-direction:column; gap:13px; width:100%; max-width:470px;}
@@ -128,7 +130,8 @@
 <!-- ================= HOME ================= -->
 <section id="home" class="view">
   <div class="brand">
-    <h1>意味順ゲーム</h1>
+    <h1>意味順ゲームズ</h1>
+    <div class="wordmark">imijun games</div>
     <div class="track6">
       <span style="background:var(--b0)">だれが</span><span style="background:var(--b1)">する・です</span>
       <span style="background:var(--b2)">だれ</span><span style="background:var(--b3)">なに</span>
@@ -140,7 +143,7 @@
     <div class="tile" id="home-drop" style="--acc:var(--b1)">
       <div class="ic">▼</div>
       <div>
-        <div class="tag">入門・分類</div>
+        <div class="tag">imijun drop · 入門</div>
         <h2>意味順ドロップ</h2>
         <p>落ちてくる語句を、正しい意味順の箱へタップで振り分ける。どの箱かを瞬時に見分ける力を鍛えます。</p>
       </div>
@@ -148,7 +151,7 @@
     <div class="tile" id="home-build" style="--acc:var(--b3)">
       <div class="ic">▥</div>
       <div>
-        <div class="tag">中級・産出</div>
+        <div class="tag">imijun builder · 中級</div>
         <h2>意味順ビルダー</h2>
         <p>手札の語句を箱にドラッグして名詞句を組み立てる。冠詞→形容詞→名詞→修飾（前置詞句・関係詞）の順を作れるように。</p>
       </div>
