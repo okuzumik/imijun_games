@@ -9,7 +9,7 @@
   :root{
     --ink:#141a2b; --ink2:#1d2438; --panel:#232c44; --paper:#f6f2e9; --line:#38425f;
     --b0:#ce1e4e; --b1:#45a9d6; --b2:#3e9e3e; --b3:#7e3193; --b4:#e1912f; --b5:#2e74c0;
-    --good:#7ee787; --bad:#ff7a8a;
+    --good:#7ee787; --bad:#ff7a8a; --wire:#f6c453;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; height:100%;}
@@ -107,6 +107,26 @@
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.09)}100%{transform:scale(1)}}
 
+  /* ---------- THREAD ---------- */
+  .skip{margin-left:auto; background:var(--panel); border:1px solid var(--line); color:var(--paper);
+        border-radius:999px; padding:6px 14px; font-size:13px; font-weight:700; cursor:pointer;}
+  .skip:active{transform:translateY(2px);}
+  .legend{display:flex; gap:5px; justify-content:center; margin-top:7px; flex-wrap:wrap;}
+  .legend span{font-size:10px; font-weight:800; color:#fff; padding:2px 7px; border-radius:999px;}
+  #t-field{position:relative; flex:1; min-height:0; overflow:hidden; border-radius:16px;
+           background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.2)); border:1px solid var(--line); touch-action:none;}
+  #t-wire{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1;}
+  #t-thread{fill:none; stroke:var(--wire); stroke-width:7; stroke-linecap:round; stroke-linejoin:round;}
+  .tcard{position:absolute; z-index:2; pointer-events:none; background:var(--paper); color:#20242e;
+         font-weight:800; font-size:15px; padding:9px 14px; border-radius:11px; white-space:nowrap;
+         box-shadow:0 4px 0 rgba(0,0,0,.28), 0 8px 18px rgba(0,0,0,.3); transition:transform .12s, box-shadow .12s;}
+  .tcard.on{transform:scale(1.07); box-shadow:0 4px 0 rgba(0,0,0,.28), 0 0 0 3px var(--wire), 0 8px 22px rgba(0,0,0,.4);}
+  .tcard.win{box-shadow:0 4px 0 rgba(0,0,0,.28), 0 0 0 3px var(--good);}
+  .tcard.pulse{animation:pp .3s;}
+  @keyframes pp{0%{transform:scale(1.07)}50%{transform:scale(1.16)}100%{transform:scale(1.07)}}
+  #t-hint{position:absolute; inset:0; display:grid; place-items:center; text-align:center; padding:24px; pointer-events:none; z-index:3;}
+  #t-hint div{font-size:14px; line-height:1.8; opacity:.72; max-width:320px;}
+
   /* ---------- overlays / toast ---------- */
   .screen{position:fixed; inset:0; z-index:20; display:flex; flex-direction:column; justify-content:center;
           align-items:center; gap:16px; text-align:center; background:rgba(12,16,28,.9); backdrop-filter:blur(3px); padding:26px;}
@@ -137,7 +157,7 @@
       <span style="background:var(--b2)">だれ</span><span style="background:var(--b3)">なに</span>
       <span style="background:var(--b4)">どこ</span><span style="background:var(--b5)">いつ</span>
     </div>
-    <p>2つのモードで、英語の語順を組み立てる練習を。</p>
+    <p>3つのモードで、英語の語順を組み立てる練習を。</p>
   </div>
   <div class="tiles">
     <div class="tile" id="home-drop" style="--acc:var(--b1)">
@@ -154,6 +174,14 @@
         <div class="tag">imijun builder · 中級</div>
         <h2>意味順ビルダー</h2>
         <p>手札の語句を箱にドラッグして名詞句を組み立てる。冠詞→形容詞→名詞→修飾（前置詞句・関係詞）の順を作れるように。</p>
+      </div>
+    </div>
+    <div class="tile" id="home-thread" style="--acc:var(--wire)">
+      <div class="ic">🧵</div>
+      <div>
+        <div class="tag">imijun thread · なぞり</div>
+        <h2>意味順スレッド</h2>
+        <p>バラバラの語句を、意味順の並びに指でなぞってひとつの文につなぐ。おとりに惑わされず順番をたどろう。</p>
       </div>
     </div>
   </div>
@@ -208,6 +236,30 @@
   </div>
 </section>
 
+<!-- ================= THREAD ================= -->
+<section id="threadView" class="view hide">
+  <div class="hud">
+    <button class="homeBtn" id="t-home">⌂</button>
+    <div class="pill"><small>SCORE</small><span id="t-score">0</span></div>
+    <div class="pill"><small>つないだ文</small><span id="t-solved">0</span></div>
+    <div class="combo" id="t-combo"></div>
+    <button class="skip" id="t-skip">別の文 🔀</button>
+  </div>
+  <div class="goal">
+    <div class="lbl">この意味の順に、カードをなぞってつなごう</div>
+    <div class="jp" id="t-jp">—</div>
+    <div class="legend">
+      <span style="background:var(--b0)">だれが</span><span style="background:var(--b1)">する・です</span>
+      <span style="background:var(--b2)">だれ</span><span style="background:var(--b3)">なに</span>
+      <span style="background:var(--b4)">どこ</span><span style="background:var(--b5)">いつ</span>
+    </div>
+  </div>
+  <div id="t-field">
+    <svg id="t-wire"><path id="t-thread"/></svg>
+    <div id="t-hint"><div>最初のカードを押さえて、指を離さずに<br>正しい順にカードの上をなぞってね。<br>まちがえたら前のカードに戻ると1つ外れます。</div></div>
+  </div>
+</section>
+
 <script>
 /* ================= shared ================= */
 const $ = s=>document.querySelector(s);
@@ -228,7 +280,7 @@ function beep(f,d){ try{ actx=actx||new (window.AudioContext||window.webkitAudio
 function speak(t){ try{ const u=new SpeechSynthesisUtterance(t); u.lang="en-US"; u.rate=.95;
   speechSynthesis.cancel(); speechSynthesis.speak(u);}catch(e){} }
 function show(id){ document.querySelectorAll(".view").forEach(v=>v.classList.add("hide")); $(id).classList.remove("hide"); }
-function goHome(){ DROP.stop(); BUILD.stop(); show("#home"); }
+function goHome(){ DROP.stop(); BUILD.stop(); THREAD.stop(); show("#home"); }
 
 /* ================= DROP (②) ================= */
 const DROP=(function(){
@@ -390,9 +442,104 @@ const BUILD=(function(){
   return { start, stop };
 })();
 
+/* ================= THREAD (③) ================= */
+const THREAD=(function(){
+  const BANK=[
+    {jp:"私は英語を勉強します。", c:[["I",0],["study",1],["English",3]], d:[["French",3],["you",0]]},
+    {jp:"彼は本を読みます。", c:[["He",0],["reads",1],["a book",3]], d:[["books",3],["She",0],["music",3]]},
+    {jp:"彼女は台所で料理をします。", c:[["She",0],["cooks",1],["in the kitchen",4]], d:[["He",0],["at school",4],["a cake",3]]},
+    {jp:"私は毎朝公園で走ります。", c:[["I",0],["run",1],["in the park",4],["every morning",5]], d:[["at night",5],["you",0],["a book",3]]},
+    {jp:"私は図書館で本を読みます。", c:[["I",0],["read",1],["a book",3],["in the library",4]], d:[["at the park",4],["She",0],["music",3]]},
+    {jp:"私たちは夏に海へ行きます。", c:[["We",0],["go",1],["to the sea",4],["in summer",5]], d:[["in winter",5],["They",0],["a book",3]]},
+    {jp:"彼は日曜日に野球をします。", c:[["He",0],["plays",1],["baseball",3],["on Sunday",5]], d:[["soccer",3],["We",0],["on Monday",5]]},
+    {jp:"彼らは毎日学校で私に英語を教えます。",
+       c:[["They",0],["teach",1],["me",2],["English",3],["at school",4],["every day",5]], d:[["math",3],["you",2],["at home",4]]},
+  ];
+  const field=$("#t-field"), thread=$("#t-thread"), hintEl=$("#t-hint");
+  let cards=[], correctSeq=[], chain=[], stage=null, dragging=false, running=false, alive=false;
+  let segments=[], livePts=[], score=0, solved=0, combo=0, attempts=0;
+
+  function hud(){ $("#t-score").textContent=score; $("#t-solved").textContent=solved;
+    const c=$("#t-combo"); if(combo>=2){c.textContent="×"+combo;c.classList.add("on");}else c.classList.remove("on"); }
+
+  function newPuzzle(){ stage=BANK[Math.random()*BANK.length|0]; $("#t-jp").textContent=stage.jp;
+    hintEl.style.display=(solved===0?"grid":"none");
+    const list=[]; stage.c.forEach((ch,i)=>list.push({text:ch[0],box:ch[1],chunk:true,order:i}));
+    (stage.d||[]).forEach(ch=>list.push({text:ch[0],box:ch[1],chunk:false,order:-1}));
+    cards=shuffle(list); chain=[]; attempts=0; render();
+    correctSeq=cards.map((c,idx)=>({idx,c})).filter(o=>o.c.chunk).sort((a,b)=>a.c.order-b.c.order).map(o=>o.idx);
+    resetWire(); }
+
+  function render(){ field.querySelectorAll(".tcard").forEach(e=>e.remove());
+    cards.forEach((c,idx)=>{ const el=document.createElement("div"); el.className="tcard"; el.textContent=c.text;
+      el.dataset.idx=idx; field.appendChild(el); c.el=el; });
+    const W=field.clientWidth,H=field.clientHeight,n=cards.length;
+    let cols=Math.max(1,Math.round(Math.sqrt(n*W/H))); let rows=Math.ceil(n/cols);
+    const cellW=W/cols,cellH=H/rows; const cells=shuffle([...Array(cols*rows).keys()]).slice(0,n);
+    cards.forEach((c,i)=>{ const el=c.el,w=el.offsetWidth,h=el.offsetHeight;
+      const cell=cells[i],col=cell%cols,row=(cell/cols|0);
+      let cx=col*cellW+cellW/2+(Math.random()-.5)*Math.max(0,(cellW-w-14));
+      let cy=row*cellH+cellH/2+(Math.random()-.5)*Math.max(0,(cellH-h-14));
+      let left=Math.min(Math.max(6,cx-w/2),W-w-6), top=Math.min(Math.max(6,cy-h/2),H-h-6);
+      el.style.left=left+"px"; el.style.top=top+"px";
+      c.cx=left+w/2; c.cy=top+h/2; c.rect={l:left,t:top,r:left+w,b:top+h}; }); }
+
+  const center=i=>({x:cards[i].cx,y:cards[i].cy});
+  function resetWire(){ segments=[]; livePts=[]; thread.setAttribute("d",""); thread.setAttribute("stroke","var(--wire)"); }
+  function addLivePoint(x,y){ const last=livePts[livePts.length-1];
+    if(!last||Math.hypot(x-last.x,y-last.y)>3) livePts.push({x,y}); }
+  function smoothPath(p){ if(p.length<2) return p.length?`M ${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`:"";
+    let d=`M ${p[0].x.toFixed(1)} ${p[0].y.toFixed(1)}`;
+    for(let i=1;i<p.length-1;i++){ const mx=(p[i].x+p[i+1].x)/2,my=(p[i].y+p[i+1].y)/2;
+      d+=` Q ${p[i].x.toFixed(1)} ${p[i].y.toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`; }
+    const n=p.length-1; d+=` L ${p[n].x.toFixed(1)} ${p[n].y.toFixed(1)}`; return d; }
+  function drawWire(){ const all=[]; segments.forEach(s=>{for(const q of s)all.push(q);}); for(const q of livePts)all.push(q);
+    thread.setAttribute("d",smoothPath(all)); }
+  function cardAt(px,py){ for(let i=0;i<cards.length;i++){ const r=cards[i].rect;
+    if(px>=r.l+6&&px<=r.r-6&&py>=r.t+6&&py<=r.b-6) return i; } return -1; }
+  function select(i,on){ cards[i].el.classList.toggle("on",on); }
+  function pulse(i){ cards[i].el.classList.add("pulse"); setTimeout(()=>cards[i].el&&cards[i].el.classList.remove("pulse"),300); }
+
+  field.addEventListener("pointerdown",e=>{ if(!running)return;
+    const r=field.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
+    const i=cardAt(px,py); if(i<0)return; field.setPointerCapture(e.pointerId); dragging=true;
+    chain=[i]; segments=[]; livePts=[center(i)]; addLivePoint(px,py); select(i,true); pulse(i); beep(500,.05); drawWire(); });
+  field.addEventListener("pointermove",e=>{ if(!dragging)return;
+    const r=field.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top; addLivePoint(px,py);
+    const i=cardAt(px,py);
+    if(i>=0){ if(chain.length>=2&&i===chain[chain.length-2]){ select(chain.pop(),false); segments.pop();
+        livePts=[center(chain[chain.length-1])]; addLivePoint(px,py); beep(360,.04); }
+      else if(!chain.includes(i)){ livePts.push(center(i)); segments.push(livePts);
+        chain.push(i); select(i,true); pulse(i); livePts=[center(i)]; beep(560+chain.length*40,.05); } }
+    drawWire(); });
+  field.addEventListener("pointerup",()=>{ if(!dragging)return; dragging=false; drawWire(); evaluate(); });
+  field.addEventListener("pointercancel",()=>{ if(!dragging)return; dragging=false; chain.forEach(i=>select(i,false)); chain=[]; resetWire(); });
+
+  function evaluate(){ attempts++;
+    const ok=chain.length===correctSeq.length&&chain.every((v,i)=>v===correctSeq[i]);
+    if(ok){ thread.setAttribute("stroke","var(--good)");
+      chain.forEach(i=>{cards[i].el.classList.remove("on");cards[i].el.classList.add("win");});
+      const s=correctSeq.map(i=>cards[i].text).join(" ");
+      solved++; const first=attempts===1; if(first)combo++; else combo=0;
+      const g=20+stage.c.length*6+(first?combo*10:0); score+=g; hud(); beep(880,.09); speak(s);
+      showToast("+"+g+"　"+s,"var(--good)"); running=false;
+      setTimeout(()=>{ if(alive){ running=true; newPuzzle(); } },1600);
+    } else { combo=0; hud(); beep(150,.14); thread.setAttribute("stroke","var(--bad)");
+      showToast(chain.length?"うーん、順番がちがうみたい":"カードをなぞってね","var(--bad)");
+      setTimeout(()=>{ if(alive){ chain.forEach(i=>select(i,false)); chain=[]; resetWire(); } },700); } }
+
+  window.addEventListener("resize",()=>{ if(running&&!dragging){ render(); chain=[]; resetWire(); } });
+  function start(){ score=0; solved=0; combo=0; alive=true; running=true; hud(); newPuzzle(); }
+  function stop(){ alive=false; running=false; dragging=false; }
+  $("#t-skip").onclick=()=>{ if(running){ combo=0; hud(); newPuzzle(); } };
+  $("#t-home").onclick=goHome;
+  return { start, stop };
+})();
+
 /* ================= nav ================= */
 $("#home-drop").onclick=()=>{ show("#dropView"); DROP.start(); };
 $("#home-build").onclick=()=>{ show("#buildView"); BUILD.start(); };
+$("#home-thread").onclick=()=>{ show("#threadView"); THREAD.start(); };
 </script>
 </body>
 </html>
